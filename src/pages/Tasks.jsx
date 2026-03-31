@@ -1,54 +1,47 @@
-import { useReducer, useMemo, useCallback } from "react";
-import { taskReducer, initialState } from "../reducer/taskReducer";
+import { useContext, useState } from "react";
+import { TaskContext } from "../context/TaskContext";
 import TaskInput from "../components/TaskInput";
 import TaskList from "../components/TaskList";
 import Filter from "../components/Filter";
 
 function Tasks() {
-  const [state, dispatch] = useReducer(taskReducer, initialState);
+  // ✅ Get global state from context
+  const { tasks, addTask, toggleTask, deleteTask } = useContext(TaskContext);
 
-  // Memoized filtered tasks
-  const filteredTasks = useMemo(() => {
-    if (state.filter === "completed") {
-      return state.tasks.filter(t => t.completed);
-    }
-    if (state.filter === "pending") {
-      return state.tasks.filter(t => !t.completed);
-    }
-    return state.tasks;
-  }, [state.tasks, state.filter]);
+  // ✅ Only keep filter locally
+  const [filter, setFilter] = useState("all");
 
-  // Optimized handlers
-  const addTask = useCallback((text) => {
-    dispatch({ type: "ADD_TASK", payload: text });
-  }, []);
-
-  const deleteTask = useCallback((id) => {
-    dispatch({ type: "DELETE_TASK", payload: id });
-  }, []);
-
-  const toggleTask = useCallback((id) => {
-    dispatch({ type: "TOGGLE_TASK", payload: id });
-  }, []);
-
-  const setFilter = (filter) => {
-    dispatch({ type: "SET_FILTER", payload: filter });
-  };
+  // ✅ Filter Tasks
+  const filteredTasks = tasks.filter((task) => {
+    if (filter === "completed") return task.completed;
+    if (filter === "pending") return !task.completed;
+    return true;
+  });
 
   return (
-  <div className="max-w-2xl mx-auto">
-    <h1 className="text-3xl font-bold mb-6 text-center">Task Manager</h1>
+    <div className="min-h-[80vh] flex items-center justify-center px-4">
+      <div className="w-full max-w-2xl bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg">
 
-    <TaskInput addTask={addTask} />
-    <Filter setFilter={setFilter} />
+        <h1 className="text-3xl font-bold text-center mb-6">
+          Task Manager 🚀
+        </h1>
 
-    <TaskList
-      tasks={filteredTasks}
-      onDelete={deleteTask}
-      onToggle={toggleTask}
-    />
-  </div>
-);
+        {/* Add Task */}
+        <TaskInput addTask={addTask} />
+
+        {/* Filters */}
+        <Filter setFilter={setFilter} />
+
+        {/* Task List */}
+        <TaskList
+          tasks={filteredTasks}
+          onDelete={deleteTask}
+          onToggle={toggleTask}
+        />
+
+      </div>
+    </div>
+  );
 }
 
 export default Tasks;

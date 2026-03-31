@@ -1,6 +1,8 @@
-import { Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import { ThemeProvider, useTheme } from "./context/ThemeContext";
+import { TaskProvider } from "./context/TaskContext";
+import { Toaster } from "react-hot-toast";
 
 const Home = lazy(() => import("./pages/Home"));
 const Tasks = lazy(() => import("./pages/Tasks"));
@@ -11,6 +13,9 @@ function Layout() {
   return (
     <div className={theme === "dark" ? "dark" : ""}>
       <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white transition-all">
+
+        {/* ✅ Toast should be INSIDE return */}
+        <Toaster position="top-right" />
 
         {/* Navbar */}
         <nav className="flex justify-between items-center px-6 py-4 bg-white dark:bg-gray-800 shadow">
@@ -29,6 +34,7 @@ function Layout() {
             </Routes>
           </Suspense>
         </div>
+
       </div>
     </div>
   );
@@ -37,7 +43,11 @@ function Layout() {
 export default function App() {
   return (
     <ThemeProvider>
-      <Layout />
+      <TaskProvider> {/* ✅ ADDED HERE */}
+        <BrowserRouter> {/* ✅ REQUIRED */}
+          <Layout />
+        </BrowserRouter>
+      </TaskProvider>
     </ThemeProvider>
   );
 }

@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import toast from "react-hot-toast";
 function TaskInput({ addTask }) {
   const [input, setInput] = useState("");
 
@@ -8,6 +8,7 @@ function TaskInput({ addTask }) {
     addTask(input);
     setInput("");
   };
+  
 
   return (
     <div className="flex gap-3 mb-6">
